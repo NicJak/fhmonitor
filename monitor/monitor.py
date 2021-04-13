@@ -2,15 +2,21 @@ import argparse
 import json
 import logging
 import threading
+import time
+
 import requests
 from inotify_simple import INotify, flags
 
 
 def wait_for_change(path):
     inotify = INotify()
-    inotify.add_watch(path, flags.CLOSE_WRITE)
-    inotify.read()
-    logging.info(path + " changed")
+    try:
+        inotify.add_watch(path, flags.CLOSE_WRITE)
+        inotify.read()
+        logging.info(path + " changed")
+    except FileNotFoundError:
+        logging.warning("File does not exist: " + path)
+        time.sleep(60)
 
 
 def call_on_change(path, url):
