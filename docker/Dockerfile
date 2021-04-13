@@ -8,4 +8,4 @@ RUN pip install -r /tmp/requirements.txt
 WORKDIR /app
 COPY fhmonitor/fhmonitor.py .
 
-CMD python /app/monitor.py /config/config.json
+CMD python /app/fhmonitor.py /config/config.json
