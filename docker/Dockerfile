@@ -6,6 +6,6 @@ COPY requirements.txt /tmp
 RUN pip install -r /tmp/requirements.txt
 
 WORKDIR /app
-COPY monitor/monitor.py .
+COPY fhmonitor/fhmonitor.py .
 
 CMD python /app/monitor.py /config/config.json
