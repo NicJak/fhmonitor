@@ -9,4 +9,4 @@ args = parser.parse_args()
 logging.info("Parameters = " + str(args))
 
 with open(args.config) as f:
-  config = json.load(f)
+    config = json.load(f)
