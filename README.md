@@ -20,6 +20,8 @@ A JSON array in which pairs of path and URL are defined.
 ```
 
 ## Usage
+
+### Python
 Python and all libraries in requirements.txt are required.
 
 ```
@@ -28,4 +30,19 @@ pip install -r requirements.txt
 
 ```
 python fhmonitor.py /path/to/config.json
+```
+
+### Docker
+
+```
+version: "3.8"
+
+services:
+  fhmonitor:
+    image: nicjak/fhmonitor
+    container_name: fhmonitor
+    volumes:
+      - /path/to/config:/config
+      - /path/to/backup:/backup
+    restart: unless-stopped
 ```
