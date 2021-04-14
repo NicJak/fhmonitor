@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import threading
+import time
 
 import requests
 from inotify_simple import INotify, flags
@@ -76,3 +77,6 @@ for backup in config:
 
 for thread in threads:
     thread.join()
+
+while True:
+    time.sleep(1)
