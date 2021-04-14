@@ -60,12 +60,7 @@ def main():
 
     threads = []
     for backup in config:
-        base = backup['path']
-        for backup_config_file in get_backup_config_files(base):
-            logging.info("monitoring " + str(backup_config_file) + " under url " + backup['url'])
-            thread = threading.Thread(target=call_on_change, args=(backup_config_file, backup['url']))
-            threads.append(thread)
-            thread.start()
+        threads.extend(to_monitoring_threads(backup['url'], get_backup_config_files(backup['path'])))
 
     for thread in threads:
         thread.join()
@@ -75,6 +70,16 @@ def main():
 
     while True:
         time.sleep(1)
+
+
+def to_monitoring_threads(url, backup_config_files):
+    threads = []
+    for backup_config_file in backup_config_files:
+        logging.info("monitoring " + str(backup_config_file) + " under url " + url)
+        thread = threading.Thread(target=call_on_change, args=(backup_config_file, url))
+        thread.start()
+        threads.append(thread)
+    return threads
 
 
 def get_config(path):
