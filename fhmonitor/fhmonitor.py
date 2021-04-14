@@ -45,6 +45,8 @@ def get_backup_config_files(path):
     return config_files
 
 
+logging.getLogger().setLevel(logging.INFO)
+
 parser = argparse.ArgumentParser('Monitor your Win8/10 FileHistory instances from a server')
 parser.add_argument(dest='config', help='the configuration file path in xml')
 args = parser.parse_args()
