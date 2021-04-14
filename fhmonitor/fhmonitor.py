@@ -62,7 +62,7 @@ def main():
     for backup in config:
         base = backup['path']
         for backup_config_file in get_backup_config_files(base):
-            logging.info("monitoring " + backup_config_file)
+            logging.info("monitoring " + str(backup_config_file) + " under url " + backup['url'])
             thread = threading.Thread(target=call_on_change, args=(backup_config_file, backup['url']))
             threads.append(thread)
             thread.start()
