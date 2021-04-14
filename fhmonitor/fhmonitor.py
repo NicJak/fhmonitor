@@ -46,41 +46,44 @@ def get_backup_config_files(path):
     return config_files
 
 
+def main():
+    parser = argparse.ArgumentParser('Monitor your Win8/10 FileHistory instances from a server')
+    parser.add_argument(dest='config', help='the configuration file path in xml')
+    args = parser.parse_args()
+
+    logging.info("Parameters = " + str(args))
+
+    with open(args.config) as f:
+        config = json.load(f)
+
+    threads = []
+    for backup in config:
+        base = backup['path']
+        if not os.path.exists(base):
+            logging.warning(base + " does not exist")
+            continue
+        if not os.access(base, os.R_OK):
+            logging.warning("no access to " + base)
+            continue
+        backup_directory = get_backup_config_files(base)
+        if len(backup_directory) == 0:
+            logging.warning("No backup found in " + base)
+        for file in backup_directory:
+            logging.info("monitoring " + file)
+            thread = threading.Thread(target=call_on_change, args=(file, backup['url']))
+            threads.append(thread)
+            thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    if len(threads):
+        logging.warning("No backups are being monitored")
+
+    while True:
+        time.sleep(1)
+
+
 logging.getLogger().setLevel(logging.INFO)
 
-parser = argparse.ArgumentParser('Monitor your Win8/10 FileHistory instances from a server')
-parser.add_argument(dest='config', help='the configuration file path in xml')
-args = parser.parse_args()
-
-logging.info("Parameters = " + str(args))
-
-with open(args.config) as f:
-    config = json.load(f)
-
-threads = []
-for backup in config:
-    base = backup['path']
-    if not os.path.exists(base):
-        logging.warning(base + " does not exist")
-        continue
-    if not os.access(base, os.R_OK):
-        logging.warning("no access to " + base)
-        continue
-    backup_directory = get_backup_config_files(base)
-    if len(backup_directory) == 0:
-        logging.warning("No backup found in " + base)
-    for file in backup_directory:
-        logging.info("monitoring " + file)
-        thread = threading.Thread(target=call_on_change, args=(file, backup['url']))
-        threads.append(thread)
-        thread.start()
-
-for thread in threads:
-    thread.join()
-
-if len(threads):
-    logging.warning("No backups are being monitored")
-
-
-while True:
-    time.sleep(1)
+main()
