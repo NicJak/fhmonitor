@@ -23,6 +23,9 @@ def call_on_change(path, url):
 
 
 def get_subdirectories(path):
+    if not os.access(path, os.R_OK):
+        logging.warning("no access to " + path)
+        return []
     subdirectories = []
     for directory in next(os.walk(path))[1]:
         subdirectories.append(os.path.join(path, directory))
@@ -30,6 +33,9 @@ def get_subdirectories(path):
 
 
 def get_configuration_directory(path):
+    if not os.access(path, os.R_OK):
+        logging.warning("no access to " + path)
+        return None
     for directory in next(os.walk(path))[1]:
         if directory == 'Configuration':
             return os.path.join(path, directory)
