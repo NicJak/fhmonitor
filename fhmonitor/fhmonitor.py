@@ -48,9 +48,7 @@ def get_backup_config_files(path):
 
 def main():
     args = get_args()
-
-    with open(args.config) as f:
-        config = json.load(f)
+    config = get_config(args.config)
 
     threads = []
     for backup in config:
@@ -78,6 +76,12 @@ def main():
 
     while True:
         time.sleep(1)
+
+
+def get_config(path):
+    with open(path) as f:
+        config = json.load(f)
+    return config
 
 
 def get_args():
