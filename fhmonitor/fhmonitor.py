@@ -78,5 +78,9 @@ for backup in config:
 for thread in threads:
     thread.join()
 
+if len(threads):
+    logging.warning("No backups are being monitored")
+
+
 while True:
     time.sleep(1)
