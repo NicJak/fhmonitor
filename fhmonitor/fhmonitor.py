@@ -62,6 +62,9 @@ for backup in config:
     if not os.path.exists(base):
         logging.warning(base + " does not exist")
         continue
+    if not os.access(base, os.R_OK):
+        logging.warning("no access to " + base)
+        continue
     backup_directory = get_backup_config_files(base)
     if len(backup_directory) == 0:
         logging.warning("No backup found in " + base)
