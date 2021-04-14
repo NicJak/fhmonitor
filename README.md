@@ -43,6 +43,6 @@ services:
     container_name: fhmonitor
     volumes:
       - /path/to/config:/config
-      - /path/to/backup:/backup
+      - /path/to/backups:/backups
     restart: unless-stopped
 ```

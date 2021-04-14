@@ -1,6 +1,10 @@
 [
-    {
-     "path": "/root",
-     "url": "https://monitoring"
-    }
+  {
+    "path": "/backups/markus",
+    "url": "https://monitoring/markus"
+  },
+  {
+    "path": "/backups/peter",
+    "url": "https://monitoring/peter"
+  }
 ]
