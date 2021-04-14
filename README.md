@@ -9,11 +9,11 @@ A JSON array in which pairs of path and URL are defined.
 ```
 [
     {
-        "path": "/backup/backup1",
+        "path": "/backups/markus",
         "url": "https://hc-ping.com/00000000-1111-2222-3333-444444444444"
     },
     {
-        "path": "/backup/backup2",
+        "path": "/backups/peter",
         "url": "https://hc-ping.com/55555555-6666-7777-8888-999999999999"
     }
 ]
