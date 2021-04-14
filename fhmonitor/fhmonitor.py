@@ -6,20 +6,22 @@ import threading
 import time
 
 import requests
-from inotify_simple import INotify, flags
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 
-def wait_for_change(path):
-    inotify = INotify()
-    inotify.add_watch(path, flags.CLOSE_WRITE)
-    inotify.read()
-    logging.info(path + " changed")
+class FileObserver(FileSystemEventHandler):
+    def __init__(self, path, url):
+        self.path = path
+        self.url = url
 
+    def on_modified(self, event):
+        logging.info(self.path + " changed")
+        requests.get(self.url)
 
-def call_on_change(path, url):
-    while True:
-        wait_for_change(path)
-        requests.get(url)
+    def on_closed(self, event):
+        logging.info(self.path + " closed")
+        requests.get(self.url)
 
 
 def get_subdirectories(path):
@@ -42,56 +44,55 @@ def get_configuration_directory(path):
     return None
 
 
-def get_backup_config_files(path):
+def get_backup_config_directory(path):
     if not os.path.exists(path):
         logging.warning(path + " does not exist")
-        return []
+        return None
     if not os.access(path, os.R_OK):
         logging.warning("no access to " + path)
-        return []
-    config_files = []
+        return None
     for backup_directory in get_subdirectories(path):
         config_directory = get_configuration_directory(backup_directory)
         if config_directory is not None:
-            for config_file in next(os.walk(config_directory))[2]:
-                config_files.append(os.path.join(config_directory, config_file))
-    if len(config_files) == 0:
-        logging.warning("No backup found in " + path)
-    return config_files
+            return config_directory
+    logging.warning("No backup found in " + path)
+    return None
 
 
-def main():
-    args = get_args()
-    config = get_config(args.config)
-
-    threads = []
-    for backup in config:
-        threads.extend(to_monitoring_threads(backup['url'], get_backup_config_files(backup['path'])))
-
-    for thread in threads:
-        thread.join()
-
-    if len(threads):
-        logging.warning("No backups are being monitored")
-
-    while True:
-        time.sleep(1)
-
-
-def to_monitoring_threads(url, backup_config_files):
-    threads = []
-    for backup_config_file in backup_config_files:
-        logging.info("monitoring " + str(backup_config_file) + " under url " + url)
-        thread = threading.Thread(target=call_on_change, args=(backup_config_file, url))
-        thread.start()
-        threads.append(thread)
-    return threads
+def to_observer(url, backup_config_directory):
+    logging.info("monitoring " + str(backup_config_directory) + " under url " + url)
+    observer = Observer()
+    observer.schedule(FileObserver(backup_config_directory, url), backup_config_directory, recursive=True)
+    observer.start()
+    return observer
 
 
 def get_config(path):
     with open(path) as f:
         config = json.load(f)
     return config
+
+
+def main():
+    args = get_args()
+    config = get_config(args.config)
+
+    observers = []
+    for backup in config:
+        directory = get_backup_config_directory(backup['path'])
+        if directory is not None:
+            observers.append(to_observer(backup['url'], directory))
+
+    if len(observers) == 0:
+        logging.warning("No backups are being monitored")
+
+    try:
+        while True:
+            time.sleep(1)
+    finally:
+        for observer in observers:
+            observer.stop()
+            observer.join()
 
 
 def get_args():
