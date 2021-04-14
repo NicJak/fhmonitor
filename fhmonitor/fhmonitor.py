@@ -37,12 +37,20 @@ def get_configuration_directory(path):
 
 
 def get_backup_config_files(path):
+    if not os.path.exists(path):
+        logging.warning(path + " does not exist")
+        return []
+    if not os.access(path, os.R_OK):
+        logging.warning("no access to " + path)
+        return []
     config_files = []
     for backup_directory in get_subdirectories(path):
         config_directory = get_configuration_directory(backup_directory)
         if config_directory is not None:
             for config_file in next(os.walk(config_directory))[2]:
                 config_files.append(os.path.join(config_directory, config_file))
+    if len(config_files) == 0:
+        logging.warning("No backup found in " + path)
     return config_files
 
 
@@ -53,18 +61,9 @@ def main():
     threads = []
     for backup in config:
         base = backup['path']
-        if not os.path.exists(base):
-            logging.warning(base + " does not exist")
-            continue
-        if not os.access(base, os.R_OK):
-            logging.warning("no access to " + base)
-            continue
-        backup_directory = get_backup_config_files(base)
-        if len(backup_directory) == 0:
-            logging.warning("No backup found in " + base)
-        for file in backup_directory:
-            logging.info("monitoring " + file)
-            thread = threading.Thread(target=call_on_change, args=(file, backup['url']))
+        for backup_config_file in get_backup_config_files(base):
+            logging.info("monitoring " + backup_config_file)
+            thread = threading.Thread(target=call_on_change, args=(backup_config_file, backup['url']))
             threads.append(thread)
             thread.start()
 
