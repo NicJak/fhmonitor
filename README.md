@@ -7,18 +7,18 @@ A tool to monitor File History from server. The tool calls a defined HTTP addres
 ![](https://raw.githubusercontent.com/NicJak/fhmonitor/main/images/telegram.png)
 
 ## Config
-A JSON array in which pairs of path and URL are defined.
+A JSON array in which pairs of path and URL are defined. Usually the directory structure follows the pattern [base]/[windows-username].
 
 ### Sample
 
 ```
 [
     {
-        "path": "/backups/markus",
+        "path": "/markus/markus@domain.com",
         "url": "https://hc-ping.com/00000000-1111-2222-3333-444444444444"
     },
     {
-        "path": "/backups/peter",
+        "path": "/peter/peter",
         "url": "https://hc-ping.com/55555555-6666-7777-8888-999999999999"
     }
 ]

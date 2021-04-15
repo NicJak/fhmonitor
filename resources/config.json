@@ -1,10 +1,10 @@
 [
   {
-    "path": "/backups/markus",
+    "path": "/markus/markus@domain.com",
     "url": "https://monitoring/markus"
   },
   {
-    "path": "/backups/peter",
+    "path": "/peter/Peter\\ Pan",
     "url": "https://monitoring/peter"
   }
 ]
