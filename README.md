@@ -1,7 +1,10 @@
 # File History Monitor
 A tool to monitor File History from server. The tool calls a defined HTTP address whenever a change occurs. Services such as https://healthchecks.io (see picture below) can be configured to send E-Mail / Instant Messaging messages when a timeout between backups has occured.
 
+### Overview from Healthchecks.io
 ![](https://raw.githubusercontent.com/NicJak/fhmonitor/main/images/healthchecks.png)
+### Telegram Alert
+![](https://raw.githubusercontent.com/NicJak/fhmonitor/main/images/telegram.png)
 
 ## Config
 A JSON array in which pairs of path and URL are defined.
